@@ -1,0 +1,34 @@
+name: Publish Resource Types
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'resource-types/**'
+      - '.github/workflows/publish-resource-types.yml'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      MASSDRIVER_API_KEY: ${{ secrets.MASSDRIVER_API_KEY }}
+      MASSDRIVER_ORG_ID: ${{ vars.MASSDRIVER_ORG_ID }}
+      MASSDRIVER_URL: ${{ vars.MASSDRIVER_URL || 'https://api.massdriver.cloud' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Massdriver CLI
+        uses: massdriver-cloud/actions/setup@v6
+      - name: Publish All Resource Types
+        # Massdriver v2 requires an OCI repository (named exactly after the
+        # resource type) to exist before publish. `mass repository create` is
+        # idempotent against the API on a name match, so we attempt creation
+        # first and continue if it already exists.
+        run: |
+          for dir in resource-types/*/; do
+            name=$(basename "$dir")
+            echo "Ensuring resource-type repository exists for $name..."
+            mass repository create "$name" -t resource-type 2>&1 || true
+            echo "Publishing resource type $name..."
+            mass resource-type publish "${dir}massdriver.yaml"
+          done

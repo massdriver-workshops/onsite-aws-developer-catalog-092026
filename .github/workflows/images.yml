@@ -28,7 +28,7 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          images: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/hr-workshop-${{ matrix.service }}
+          images: docker.io/massdrivercloud/hr-workshop-${{ matrix.service }}
           tags: |
             type=semver,pattern={{version}}
             type=sha,prefix=

@@ -27,7 +27,7 @@ params:
   examples:
     - __name: Small
       image:
-        repository: docker.io/coryodaniel/hr-workshop-timeoff-api
+        repository: docker.io/massdrivercloud/hr-workshop-timeoff-api
         tag: "1.0.0"
       replicas: 1
       resources:
@@ -40,7 +40,7 @@ params:
         window_days: 5
     - __name: Medium
       image:
-        repository: docker.io/coryodaniel/hr-workshop-timeoff-api
+        repository: docker.io/massdrivercloud/hr-workshop-timeoff-api
         tag: "1.0.0"
       replicas: 2
       resources:
@@ -70,7 +70,7 @@ params:
         repository:
           title: Repository
           type: string
-          default: docker.io/coryodaniel/hr-workshop-timeoff-api
+          default: docker.io/massdrivercloud/hr-workshop-timeoff-api
           pattern: ^[a-z0-9./_-]+$
           message:
             pattern: A registry path such as docker.io/acme/timeoff-api, without a tag.

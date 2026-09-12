@@ -34,9 +34,9 @@ Drag `payroll-api`. Connect its `kafka` port. Pick the same events topic. Set `P
 |--------|-------------|--------------|-------|
 | `mariadb` | landing zone | One database from your landing zone as a `mariadb-authentication` connection | |
 | `kafka` | landing zone | Your topics as a `kafka-authentication` connection | |
-| `timeoff-api` | `mariadb`, `kafka` | Requests and approvals. Publishes a decision event per approval or denial. Emits its endpoint. | [coryodaniel/hr-workshop-timeoff-api](https://hub.docker.com/r/coryodaniel/hr-workshop-timeoff-api) |
-| `payroll-api` | `kafka` | Consumes decision events into a PTO ledger. Emits its endpoint. | [coryodaniel/hr-workshop-payroll-api](https://hub.docker.com/r/coryodaniel/hr-workshop-payroll-api) |
-| `timeoff-ui` | `timeoff-api`, `payroll-api` (optional) | The web page. Reads both API endpoints from its connections. | [coryodaniel/hr-workshop-timeoff-ui](https://hub.docker.com/r/coryodaniel/hr-workshop-timeoff-ui) |
+| `timeoff-api` | `mariadb`, `kafka` | Requests and approvals. Publishes a decision event per approval or denial. Emits its endpoint. | [massdrivercloud/hr-workshop-timeoff-api](https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-api) |
+| `payroll-api` | `kafka` | Consumes decision events into a PTO ledger. Emits its endpoint. | [massdrivercloud/hr-workshop-payroll-api](https://hub.docker.com/r/massdrivercloud/hr-workshop-payroll-api) |
+| `timeoff-ui` | `timeoff-api`, `payroll-api` (optional) | The web page. Reads both API endpoints from its connections. | [massdrivercloud/hr-workshop-timeoff-ui](https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-ui) |
 
 Your applications answer at:
 
@@ -48,7 +48,7 @@ http://<your hostname>/api/payroll/  payroll-api
 
 ## Images
 
-The example images are public on Docker Hub: [hr-workshop-timeoff-api](https://hub.docker.com/r/coryodaniel/hr-workshop-timeoff-api), [hr-workshop-payroll-api](https://hub.docker.com/r/coryodaniel/hr-workshop-payroll-api), [hr-workshop-timeoff-ui](https://hub.docker.com/r/coryodaniel/hr-workshop-timeoff-ui). Every bundle's `image` parameter defaults to them. Point it at your own image to run your own code.
+The example images are public on Docker Hub: [hr-workshop-timeoff-api](https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-api), [hr-workshop-payroll-api](https://hub.docker.com/r/massdrivercloud/hr-workshop-payroll-api), [hr-workshop-timeoff-ui](https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-ui). Every bundle's `image` parameter defaults to them. Point it at your own image to run your own code.
 
 ## Build your own
 

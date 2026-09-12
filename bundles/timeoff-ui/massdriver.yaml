@@ -27,7 +27,7 @@ params:
   examples:
     - __name: Small
       image:
-        repository: docker.io/coryodaniel/hr-workshop-timeoff-ui
+        repository: docker.io/massdrivercloud/hr-workshop-timeoff-ui
         tag: "1.0.0"
       replicas: 1
       resources:
@@ -48,7 +48,7 @@ params:
         repository:
           title: Repository
           type: string
-          default: docker.io/coryodaniel/hr-workshop-timeoff-ui
+          default: docker.io/massdrivercloud/hr-workshop-timeoff-ui
           pattern: ^[a-z0-9./_-]+$
           message:
             pattern: A registry path such as docker.io/acme/timeoff-ui, without a tag.

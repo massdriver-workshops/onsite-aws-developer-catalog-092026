@@ -79,7 +79,7 @@ Every service reads its settings from the environment. `BASE_PATH` is the prefix
 
 ## Images
 
-Images are published to Docker Hub as `coryodaniel/hr-workshop-<service>`. `.github/workflows/images.yml` builds all three on push to `main` and on tags.
+Images are published to Docker Hub as `massdrivercloud/hr-workshop-<service>`. `.github/workflows/images.yml` builds all three on push to `main` and on tags.
 
 ## Bundles
 

@@ -27,7 +27,7 @@ params:
       type: string
       $md.enum:
         connection: landing_zone
-        options: .mariadb.databases[]
+        options: .mariadb.databases
         value: .
 
 ui:

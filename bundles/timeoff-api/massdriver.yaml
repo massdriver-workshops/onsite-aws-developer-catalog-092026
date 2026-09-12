@@ -116,7 +116,7 @@ params:
       type: string
       $md.enum:
         connection: kafka
-        options: .topics[]
+        options: .topics
         value: .name
         label: '"\(.name) - \(.description)"'
     max_days_per_request:

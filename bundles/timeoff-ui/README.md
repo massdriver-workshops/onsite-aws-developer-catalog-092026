@@ -11,3 +11,7 @@ The browser front end for the time-off stack: file a request, approve or deny it
 | `payroll_api` | `api-endpoint`, optional | Where the payroll API answers; the panel waits until connected |
 
 No database, no Kafka, no secrets. The UI reads the API URLs from its connections.
+
+## Emits
+
+`site`: an `api-endpoint` whose `url` is the page. Open it from the Resources tab.

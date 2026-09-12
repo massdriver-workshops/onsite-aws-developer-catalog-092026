@@ -1,0 +1,25 @@
+name: kafka
+description: Your Kafka topics from the landing zone, as a connection your application can use. Brokers, credentials, topics, and the consumer group prefix come along.
+source_url: https://github.com/massdriver-cloud/onsite-aws-developer-catalog-092026/tree/main/bundles/kafka
+version: 0.0.0
+
+steps:
+  - path: src
+    provisioner: opentofu
+
+dependencies:
+  landing_zone:
+    resource_type: landing-zone@~1
+    required: true
+
+resources:
+  kafka:
+    resource_type: kafka-authentication@0.0.0
+    required: true
+
+params:
+  properties: {}
+
+ui:
+  ui:order:
+    - "*"

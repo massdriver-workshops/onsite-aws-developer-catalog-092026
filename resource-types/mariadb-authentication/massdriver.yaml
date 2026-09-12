@@ -1,0 +1,74 @@
+name: mariadb-authentication
+version: 0.0.0
+label: MariaDB Authentication
+
+ui:
+  connectionOrientation: link
+
+schema:
+  title: MariaDB Authentication
+  description: Everything an application needs to connect to one MariaDB database over TLS.
+  type: object
+  additionalProperties: false
+  required:
+    - auth
+    - dsn
+    - tls
+  properties:
+    auth:
+      title: Authentication
+      type: object
+      additionalProperties: false
+      required:
+        - hostname
+        - port
+        - database
+        - username
+        - password
+      properties:
+        hostname:
+          title: Host
+          type: string
+          minLength: 1
+        port:
+          title: Port
+          type: integer
+          minimum: 1
+          maximum: 65535
+          default: 3306
+        database:
+          title: Database
+          type: string
+          minLength: 1
+        username:
+          title: Username
+          type: string
+          minLength: 1
+        password:
+          $md.sensitive: true
+          $md.copyable: false
+          title: Password
+          type: string
+    dsn:
+      $md.sensitive: true
+      $md.copyable: false
+      title: Connection URL
+      description: mysql://user:password@host:port/database with TLS settings. Most drivers accept it as is.
+      type: string
+      minLength: 1
+    tls:
+      title: TLS
+      type: object
+      additionalProperties: false
+      required:
+        - required
+        - ca_bundle
+      properties:
+        required:
+          title: TLS required
+          type: boolean
+        ca_bundle:
+          title: CA bundle
+          description: PEM bundle to verify the server certificate.
+          type: string
+          minLength: 1

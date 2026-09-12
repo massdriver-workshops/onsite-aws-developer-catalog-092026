@@ -1,0 +1,79 @@
+name: kafka-authentication
+version: 0.0.0
+label: Kafka Authentication
+
+ui:
+  connectionOrientation: link
+
+schema:
+  title: Kafka Authentication
+  description: Everything an application needs to produce to and consume from its Kafka topics.
+  type: object
+  additionalProperties: false
+  required:
+    - bootstrap_brokers
+    - auth
+    - topics
+    - consumer_group_prefix
+  properties:
+    bootstrap_brokers:
+      title: Bootstrap brokers
+      type: array
+      minItems: 1
+      items:
+        type: string
+        pattern: ^[^:\s]+:[0-9]+$
+        message:
+          pattern: host:port
+    auth:
+      title: Authentication
+      type: object
+      additionalProperties: false
+      required:
+        - mechanism
+        - username
+        - password
+        - tls
+      properties:
+        mechanism:
+          title: SASL mechanism
+          type: string
+          enum:
+            - SCRAM-SHA-256
+            - SCRAM-SHA-512
+        username:
+          title: Username
+          type: string
+          minLength: 1
+        password:
+          $md.sensitive: true
+          $md.copyable: false
+          title: Password
+          type: string
+        tls:
+          title: TLS
+          type: boolean
+    topics:
+      title: Topics
+      description: Topics this credential may produce to and consume from.
+      type: array
+      minItems: 1
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - description
+        properties:
+          name:
+            title: Topic
+            type: string
+            minLength: 1
+          description:
+            title: Purpose
+            type: string
+    consumer_group_prefix:
+      title: Consumer group prefix
+      description: Consumer groups must start with this.
+      type: string
+      minLength: 1

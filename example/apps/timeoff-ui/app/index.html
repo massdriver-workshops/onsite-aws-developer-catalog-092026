@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Time Off</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1 id="company">Time Off</h1>
+      <div class="sub">Requests, approvals, and what they do to the next pay run</div>
+    </div>
+    <div class="who">
+      <label for="actor">Acting as</label>
+      <select id="actor"></select>
+      <span class="badge" id="namespace" title="Kubernetes namespace">…</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>New request</h2>
+      <form id="request-form">
+        <div class="row">
+          <label>Type <select name="kind" id="kind"></select></label>
+          <label>From <input type="date" name="start_date" required></label>
+          <label>To <input type="date" name="end_date" required></label>
+        </div>
+        <label>Note <input type="text" name="note" maxlength="500" placeholder="optional"></label>
+        <div class="row actions">
+          <button type="submit">Submit request</button>
+          <span class="hint" id="policy"></span>
+        </div>
+        <div class="error" id="form-error" hidden></div>
+      </form>
+    </section>
+
+    <section class="card wide">
+      <h2>Requests <span class="count" id="request-count"></span></h2>
+      <table id="requests">
+        <thead>
+          <tr><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty" id="requests-empty" hidden>No requests yet. File one on the left.</div>
+      <div class="error" id="requests-error" hidden></div>
+    </section>
+
+    <section class="card">
+      <h2>Payroll <span class="count" id="pay-period"></span></h2>
+      <div id="payroll-offline" class="empty">
+        Payroll is not connected. Deploy <code>payroll-api</code> and this panel fills in on its own.
+      </div>
+      <div id="payroll" hidden>
+        <div class="provider" id="provider"></div>
+        <table id="ledger">
+          <thead><tr><th>Employee</th><th>Paid days</th><th>Unpaid</th><th>Adjustment</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="empty" id="ledger-empty" hidden>No approved time off yet.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Activity</h2>
+      <ul id="events" class="feed"></ul>
+      <div class="empty" id="events-empty">Events from <code>timeoff-api</code> land here once payroll is consuming them.</div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span id="ver-timeoff">timeoff-api: …</span>
+    <span id="ver-payroll">payroll-api: …</span>
+    <span id="ver-ui"></span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

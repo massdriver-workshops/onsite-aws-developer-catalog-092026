@@ -1,0 +1,17 @@
+name: web-service
+labels: {}
+image: ""
+replicas: 1
+port: 8080
+healthPath: /healthz
+resources:
+  cpu: 0.25
+  memoryMb: 256
+env: {}
+secrets: {}
+ingress:
+  className: nginx
+  host: ""
+  path: /
+# emptyDir mounts for images that must write somewhere despite a read-only root.
+writableDirs: []

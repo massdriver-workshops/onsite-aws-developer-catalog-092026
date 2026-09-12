@@ -1,0 +1,140 @@
+name: payroll-api
+description: Consumes time-off decisions from Kafka and serves the resulting PTO ledger and pay-period adjustments. No database, no write endpoints; the topic is the source of truth.
+source_url: https://github.com/massdriver-cloud/onsite-aws-developer-catalog-092026/tree/main/bundles/payroll-api
+version: 0.0.0
+
+steps:
+  - path: src
+    provisioner: opentofu
+
+dependencies:
+  landing_zone:
+    resource_type: landing-zone@~1
+    required: true
+  kafka:
+    resource_type: kafka-authentication@0.0.0
+    required: true
+
+params:
+  examples:
+    - __name: Small
+      image:
+        repository: docker.io/coryodaniel/hr-workshop-payroll-api
+        tag: "1.0.0"
+      resources:
+        cpu: 0.25
+        memory_mb: 256
+      path: /api/payroll
+      pay_period: biweekly
+  required:
+    - image
+    - resources
+    - path
+    - events_topic
+    - pay_period
+  properties:
+    image:
+      title: Container image
+      type: object
+      required:
+        - repository
+        - tag
+      properties:
+        repository:
+          title: Repository
+          type: string
+          default: docker.io/coryodaniel/hr-workshop-payroll-api
+          pattern: ^[a-z0-9./_-]+$
+          message:
+            pattern: A registry path such as docker.io/acme/payroll-api, without a tag.
+        tag:
+          title: Tag
+          type: string
+          default: "1.0.0"
+          pattern: ^[A-Za-z0-9_][A-Za-z0-9._-]{0,127}$
+          message:
+            pattern: A plain image tag, for example 1.0.0.
+    resources:
+      title: Resources
+      description: One replica runs at a time so the in-memory ledger sees every event.
+      type: object
+      required:
+        - cpu
+        - memory_mb
+      properties:
+        cpu:
+          title: CPU cores
+          type: number
+          minimum: 0.1
+          maximum: 2
+          default: 0.25
+        memory_mb:
+          title: Memory (MB)
+          type: integer
+          minimum: 128
+          maximum: 2048
+          default: 256
+    path:
+      $md.immutable: true
+      title: Path
+      description: Served under your hostname. Cannot change after the first deploy because the UI is configured against it.
+      type: string
+      default: /api/payroll
+      pattern: ^/[a-z0-9][a-z0-9/-]*[a-z0-9]$
+      message:
+        pattern: Starts with a slash, lowercase letters, digits, and hyphens, no trailing slash.
+    events_topic:
+      title: Events topic
+      description: The topic timeoff-api publishes decisions to. Pick the same one.
+      type: string
+      $md.enum:
+        connection: kafka
+        options: .topics[]
+        value: .name
+        label: '"\(.name) - \(.description)"'
+    pay_period:
+      title: Pay period
+      type: string
+      enum:
+        - weekly
+        - biweekly
+        - semimonthly
+        - monthly
+      default: biweekly
+
+app:
+  envs:
+    NAMESPACE: .dependencies.landing_zone.prefix
+    BASE_PATH: .params.path
+    KAFKA_BROKERS: .dependencies.kafka.bootstrap_brokers | join(",")
+    KAFKA_TOPIC: .params.events_topic
+    KAFKA_CONSUMER_GROUP: .dependencies.kafka.consumer_group_prefix + "payroll"
+    KAFKA_USERNAME: .dependencies.kafka.auth.username
+    KAFKA_PASSWORD: .dependencies.kafka.auth.password
+    KAFKA_SASL_MECHANISM: .dependencies.kafka.auth.mechanism
+    KAFKA_TLS: .dependencies.kafka.auth.tls | tostring
+    PAY_PERIOD: .params.pay_period
+  secrets:
+    PAYMENTS_API_KEY:
+      title: Payments provider API key
+      description: Credential for the payments provider. No resource on the canvas can supply this, so it is set on the instance. Any value works for the demo; the app only checks it is present.
+      required: true
+
+ui:
+  ui:order:
+    - image
+    - resources
+    - path
+    - events_topic
+    - pay_period
+    - "*"
+  image:
+    ui:order:
+      - repository
+      - tag
+  resources:
+    ui:order:
+      - cpu
+      - memory_mb
+  pay_period:
+    ui:help: Decides the period boundaries shown next to each adjustment.

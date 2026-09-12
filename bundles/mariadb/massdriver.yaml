@@ -1,0 +1,36 @@
+name: mariadb
+description: A MariaDB database from your landing zone, as a connection your application can use. Pick the database; the credential, TLS settings, and trust bundle come along.
+source_url: https://github.com/massdriver-cloud/onsite-aws-developer-catalog-092026/tree/main/bundles/mariadb
+version: 0.0.0
+
+steps:
+  - path: src
+    provisioner: opentofu
+
+dependencies:
+  landing_zone:
+    resource_type: landing-zone@~1
+    required: true
+
+resources:
+  mariadb:
+    resource_type: mariadb-authentication@0.0.0
+    required: true
+
+params:
+  required:
+    - database
+  properties:
+    database:
+      title: Database
+      description: One of the databases in your landing zone.
+      type: string
+      $md.enum:
+        connection: landing_zone
+        options: .mariadb.databases[]
+        value: .
+
+ui:
+  ui:order:
+    - database
+    - "*"

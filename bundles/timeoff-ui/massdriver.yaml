@@ -1,0 +1,121 @@
+name: timeoff-ui
+description: The time-off web app. Static files served by nginx, calling timeoff-api and payroll-api on your hostname.
+source_url: https://github.com/massdriver-cloud/onsite-aws-developer-catalog-092026/tree/main/bundles/timeoff-ui
+version: 0.0.0
+
+steps:
+  - path: src
+    provisioner: opentofu
+
+dependencies:
+  landing_zone:
+    resource_type: landing-zone@~1
+    required: true
+
+params:
+  examples:
+    - __name: Small
+      image:
+        repository: docker.io/coryodaniel/hr-workshop-timeoff-ui
+        tag: "1.0.0"
+      replicas: 1
+      resources:
+        cpu: 0.1
+        memory_mb: 64
+      timeoff_api_path: /api/timeoff
+      payroll_api_path: /api/payroll
+  required:
+    - image
+    - replicas
+    - resources
+    - timeoff_api_path
+    - payroll_api_path
+  properties:
+    image:
+      title: Container image
+      type: object
+      required:
+        - repository
+        - tag
+      properties:
+        repository:
+          title: Repository
+          type: string
+          default: docker.io/coryodaniel/hr-workshop-timeoff-ui
+          pattern: ^[a-z0-9./_-]+$
+          message:
+            pattern: A registry path such as docker.io/acme/timeoff-ui, without a tag.
+        tag:
+          title: Tag
+          type: string
+          default: "1.0.0"
+          pattern: ^[A-Za-z0-9_][A-Za-z0-9._-]{0,127}$
+          message:
+            pattern: A plain image tag, for example 1.0.0.
+    replicas:
+      title: Replicas
+      type: integer
+      minimum: 1
+      maximum: 5
+      default: 1
+    resources:
+      title: Resources per replica
+      type: object
+      required:
+        - cpu
+        - memory_mb
+      properties:
+        cpu:
+          title: CPU cores
+          type: number
+          minimum: 0.05
+          maximum: 1
+          default: 0.1
+        memory_mb:
+          title: Memory (MB)
+          type: integer
+          minimum: 32
+          maximum: 512
+          default: 64
+    timeoff_api_path:
+      title: timeoff-api path
+      description: Path of the timeoff-api instance on the same hostname.
+      type: string
+      default: /api/timeoff
+      pattern: ^/[a-z0-9][a-z0-9/-]*[a-z0-9]$
+      message:
+        pattern: Starts with a slash, lowercase letters, digits, and hyphens, no trailing slash.
+    payroll_api_path:
+      title: payroll-api path
+      description: Path of the payroll-api instance on the same hostname. The page works without payroll deployed; that panel waits.
+      type: string
+      default: /api/payroll
+      pattern: ^/[a-z0-9][a-z0-9/-]*[a-z0-9]$
+      message:
+        pattern: Starts with a slash, lowercase letters, digits, and hyphens, no trailing slash.
+
+app:
+  envs:
+    NAMESPACE: .dependencies.landing_zone.prefix
+    BASE_PATH: '@text ""'
+    TIMEOFF_API_URL: .params.timeoff_api_path
+    PAYROLL_API_URL: .params.payroll_api_path
+
+ui:
+  ui:order:
+    - image
+    - replicas
+    - resources
+    - timeoff_api_path
+    - payroll_api_path
+    - "*"
+  image:
+    ui:order:
+      - repository
+      - tag
+  replicas:
+    ui:widget: updown
+  resources:
+    ui:order:
+      - cpu
+      - memory_mb

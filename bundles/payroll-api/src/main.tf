@@ -50,6 +50,8 @@ resource "helm_release" "app" {
     # The ledger is rebuilt from the topic on every start and lives in one process.
     replicas = 1
     port     = 8080
+    # Distroless nonroot; the image names the user, the pod policy needs the number.
+    runAsUser = 65532
     resources = {
       cpu      = var.resources.cpu
       memoryMb = var.resources.memory_mb

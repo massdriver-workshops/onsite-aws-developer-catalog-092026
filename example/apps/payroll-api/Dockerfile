@@ -9,5 +9,5 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${VERSION}"
 FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=build /out/payroll-api /payroll-api
 EXPOSE 8080
-USER nonroot
+USER 65532:65532
 ENTRYPOINT ["/payroll-api"]

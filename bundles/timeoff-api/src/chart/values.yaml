@@ -4,6 +4,8 @@ image: ""
 replicas: 1
 port: 8080
 healthPath: /healthz
+# Numeric UID the image runs as; needed when the image names its user instead of numbering it.
+runAsUser: null
 resources:
   cpu: 0.25
   memoryMb: 256

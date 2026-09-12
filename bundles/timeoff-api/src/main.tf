@@ -52,6 +52,8 @@ resource "helm_release" "app" {
     image    = "${var.image.repository}:${var.image.tag}"
     replicas = var.replicas
     port     = 8080
+    # Distroless nonroot; the image names the user, the pod policy needs the number.
+    runAsUser = 65532
     resources = {
       cpu      = var.resources.cpu
       memoryMb = var.resources.memory_mb

@@ -22,6 +22,10 @@ spec:
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
+        {{- if .Values.runAsUser }}
+        runAsUser: {{ .Values.runAsUser }}
+        runAsGroup: {{ .Values.runAsUser }}
+        {{- end }}
         seccompProfile:
           type: RuntimeDefault
       containers:

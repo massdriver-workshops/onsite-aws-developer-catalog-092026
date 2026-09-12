@@ -1,0 +1,40 @@
+name: api-endpoint
+version: 0.0.0
+label: HTTP API Endpoint
+
+ui:
+  connectionOrientation: link
+
+schema:
+  title: HTTP API Endpoint
+  description: Where an HTTP API answers, so other applications can be pointed at it.
+  type: object
+  additionalProperties: false
+  required:
+    - url
+    - scheme
+    - hostname
+    - path
+  properties:
+    url:
+      title: URL
+      type: string
+      format: uri
+    scheme:
+      title: Scheme
+      type: string
+      enum:
+        - http
+        - https
+    hostname:
+      title: Hostname
+      type: string
+      minLength: 1
+    path:
+      title: Path
+      description: The prefix the API is served under, no trailing slash.
+      type: string
+      pattern: ^/.*[^/]$|^$
+    version:
+      title: API version
+      type: string

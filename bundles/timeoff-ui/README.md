@@ -6,11 +6,8 @@ The browser front end for the time-off stack: file a request, approve or deny it
 
 | Dependency | Resource type | Used for |
 |-----------|---------------|----------|
-| `namespace` | `namespace` | Where the pods run and the path prefix the page is served under |
+| `landing_zone` | `landing-zone` | Where the pods run and the hostname the page is served on |
+| `timeoff_api` | `api-endpoint` | Where the time-off API answers |
+| `payroll_api` | `api-endpoint`, optional | Where the payroll API answers; the panel waits until connected |
 
-No database, no Kafka, no secrets. The UI only needs to know where the two APIs live, and both default to the paths their bundles use.
-
-## Parameters worth knowing
-
-- `timeoff_api_path` and `payroll_api_path` are joined to the namespace's prefix at deploy time.
-- The page works with only `timeoff-api` deployed. The payroll panel fills in when `payroll-api` appears.
+No database, no Kafka, no secrets. The UI reads the API URLs from its connections.

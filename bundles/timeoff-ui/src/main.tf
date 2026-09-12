@@ -1,13 +1,13 @@
 locals {
   params = {
-    image            = var.image
-    replicas         = var.replicas
-    resources        = var.resources
-    timeoff_api_path = var.timeoff_api_path
-    payroll_api_path = var.payroll_api_path
+    image     = var.image
+    replicas  = var.replicas
+    resources = var.resources
   }
   dependencies = {
     landing_zone = var.landing_zone
+    timeoff_api  = var.timeoff_api
+    payroll_api  = var.payroll_api
   }
 
   app_block = try(yamldecode(file("${path.root}/../massdriver.yaml")).app, { envs = {} })

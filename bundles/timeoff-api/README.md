@@ -6,9 +6,13 @@ Employees file time-off requests, managers approve or deny them, and every decis
 
 | Dependency | Resource type | Used for |
 |-----------|---------------|----------|
-| `namespace` | `namespace` | Where the pods run and the path prefix they answer on |
-| `mariadb` | `mariadb` | The schema this service owns; migrations run on start |
-| `kafka` | `kafka` | Publishing `timeoff.requested` and `timeoff.decided` events |
+| `landing_zone` | `landing-zone` | Where the pods run and the hostname they answer on |
+| `mariadb` | `mariadb-authentication` | The schema this service owns; migrations run on start |
+| `kafka` | `kafka-authentication` | Publishing `timeoff.requested` and `timeoff.decided` events |
+
+## Emits
+
+`api`: an `api-endpoint` with the URL this service answers on. `timeoff-ui` connects to it.
 
 ## Secrets
 

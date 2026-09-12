@@ -6,8 +6,12 @@ Consumes the decision events `timeoff-api` publishes and turns them into a PTO l
 
 | Dependency | Resource type | Used for |
 |-----------|---------------|----------|
-| `namespace` | `namespace` | Where the pod runs and the path prefix it answers on |
-| `kafka` | `kafka` | Consuming `timeoff.decided` events as the granted consumer group |
+| `landing_zone` | `landing-zone` | Where the pod runs and the hostname it answers on |
+| `kafka` | `kafka-authentication` | Consuming `timeoff.decided` events as the granted consumer group |
+
+## Emits
+
+`api`: an `api-endpoint` with the URL this service answers on. `timeoff-ui` connects to it.
 
 ## Secrets
 

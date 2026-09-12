@@ -4,6 +4,10 @@
 Reachable at `{{dependencies.namespace.ingress.scheme}}://{{dependencies.namespace.ingress.hostname}}{{dependencies.namespace.ingress.path_prefix}}{{params.path}}/`. `GET .../info` returns the running version and policy.
 {{/dependencies.namespace}}
 
+## Image
+
+Public image: `docker.io/coryodaniel/hr-workshop-timeoff-api`, tags on Docker Hub at https://hub.docker.com/r/coryodaniel/hr-workshop-timeoff-api. The `image.tag` parameter selects the release; every tag there is deployable.
+
 ## Pods never become ready
 
 The readiness probe hits `/healthz`, which pings the database. A pod that stays unready cannot reach MariaDB.

@@ -15,6 +15,11 @@ dependencies:
     resource_type: kafka-authentication@0.0.0
     required: true
 
+resources:
+  api:
+    resource_type: api-endpoint@0.0.0
+    required: true
+
 params:
   examples:
     - __name: Small

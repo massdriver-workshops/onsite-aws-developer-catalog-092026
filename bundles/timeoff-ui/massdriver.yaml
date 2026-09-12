@@ -11,6 +11,12 @@ dependencies:
   landing_zone:
     resource_type: landing-zone@~1
     required: true
+  timeoff_api:
+    resource_type: api-endpoint@0.0.0
+    required: true
+  payroll_api:
+    resource_type: api-endpoint@0.0.0
+    required: false
 
 params:
   examples:
@@ -22,14 +28,10 @@ params:
       resources:
         cpu: 0.1
         memory_mb: 64
-      timeoff_api_path: /api/timeoff
-      payroll_api_path: /api/payroll
   required:
     - image
     - replicas
     - resources
-    - timeoff_api_path
-    - payroll_api_path
   properties:
     image:
       title: Container image
@@ -77,37 +79,19 @@ params:
           minimum: 32
           maximum: 512
           default: 64
-    timeoff_api_path:
-      title: timeoff-api path
-      description: Path of the timeoff-api instance on the same hostname.
-      type: string
-      default: /api/timeoff
-      pattern: ^/[a-z0-9][a-z0-9/-]*[a-z0-9]$
-      message:
-        pattern: Starts with a slash, lowercase letters, digits, and hyphens, no trailing slash.
-    payroll_api_path:
-      title: payroll-api path
-      description: Path of the payroll-api instance on the same hostname. The page works without payroll deployed; that panel waits.
-      type: string
-      default: /api/payroll
-      pattern: ^/[a-z0-9][a-z0-9/-]*[a-z0-9]$
-      message:
-        pattern: Starts with a slash, lowercase letters, digits, and hyphens, no trailing slash.
 
 app:
   envs:
     NAMESPACE: .dependencies.landing_zone.prefix
     BASE_PATH: '@text ""'
-    TIMEOFF_API_URL: .params.timeoff_api_path
-    PAYROLL_API_URL: .params.payroll_api_path
+    TIMEOFF_API_URL: .dependencies.timeoff_api.url | rtrimstr("/")
+    PAYROLL_API_URL: (.dependencies.payroll_api.url // "") | rtrimstr("/")
 
 ui:
   ui:order:
     - image
     - replicas
     - resources
-    - timeoff_api_path
-    - payroll_api_path
     - "*"
   image:
     ui:order:

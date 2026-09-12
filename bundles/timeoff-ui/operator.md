@@ -4,6 +4,10 @@
 Open `{{dependencies.namespace.ingress.scheme}}://{{dependencies.namespace.ingress.hostname}}{{dependencies.namespace.ingress.path_prefix}}/`.
 {{/dependencies.namespace}}
 
+## Image
+
+Public image: `docker.io/coryodaniel/hr-workshop-timeoff-ui`, tags on Docker Hub at https://hub.docker.com/r/coryodaniel/hr-workshop-timeoff-ui. The `image.tag` parameter selects the release; every tag there is deployable.
+
 ## Page loads but shows "timeoff-api is not reachable"
 
 The browser calls `{{dependencies.namespace.ingress.path_prefix}}{{params.timeoff_api_path}}` on the same host. Either no `timeoff-api` instance is deployed under that path, or its `path` param differs from `timeoff_api_path` here. Check the API directly:

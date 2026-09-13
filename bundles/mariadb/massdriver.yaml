@@ -1,6 +1,6 @@
 name: mariadb
 description: A MariaDB database from your landing zone, as a resource your application can depend on. Pick the database; the credential, TLS settings, and trust bundle come along.
-source_url: https://github.com/massdriver-cloud/onsite-aws-developer-catalog-092026/tree/main/bundles/mariadb
+source_url: https://github.com/massdriver-workshops/onsite-aws-developer-catalog-092026/tree/main/bundles/mariadb
 version: 0.0.0
 
 steps:

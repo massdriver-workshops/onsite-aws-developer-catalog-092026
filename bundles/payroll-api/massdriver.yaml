@@ -1,6 +1,6 @@
 name: payroll-api
 description: Consumes time-off decisions from Kafka and serves the resulting PTO ledger and pay-period adjustments. No database, no write endpoints; the topic is the source of truth.
-source_url: https://github.com/massdriver-cloud/onsite-aws-developer-catalog-092026/tree/main/bundles/payroll-api
+source_url: https://github.com/massdriver-workshops/onsite-aws-developer-catalog-092026/tree/main/bundles/payroll-api
 version: 0.0.0
 
 steps:

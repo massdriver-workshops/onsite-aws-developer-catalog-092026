@@ -13,10 +13,6 @@ Consumes the decision events `timeoff-api` publishes and turns them into a PTO l
 
 `api`: an `api-endpoint` with the URL this service answers on. `timeoff-ui` connects to it.
 
-## Alarms
-
-One alarm, **Replicas unavailable**, is registered on the instance and shows on its Alarms tab and in the dependency graph. It changes state when a monitor posts to the instance's alarm webhook; this workshop wires no monitor, so it stays quiet.
-
 ## Secrets
 
 `PAYMENTS_API_KEY` stands in for a real payments provider credential. Nothing on the canvas can supply it, which is the point: it is set on the instance, and deploy is blocked until it is. The app only checks it is present and shows its last four characters.

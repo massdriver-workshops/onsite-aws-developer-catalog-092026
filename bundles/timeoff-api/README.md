@@ -14,6 +14,10 @@ Employees file time-off requests, managers approve or deny them, and every decis
 
 `api`: an `api-endpoint` with the URL this service answers on. `timeoff-ui` connects to it.
 
+## Alarms
+
+One alarm, **Replicas unavailable**, is registered on the instance and shows on its Alarms tab and in the dependency graph. It changes state when a monitor posts to the instance's alarm webhook; this workshop wires no monitor, so it stays quiet.
+
 ## Secrets
 
 `SESSION_SECRET` signs the acting-as tokens the UI sends. Deploy is blocked until it is set.

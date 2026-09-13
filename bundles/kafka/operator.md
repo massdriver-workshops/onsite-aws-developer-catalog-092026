@@ -9,13 +9,13 @@ Topics under `{{dependencies.landing_zone.kafka.topic_prefix}}`, consumer groups
 
 ## Check the credential from a laptop
 
-Take one broker from the resource's `bootstrap_brokers` list and the password from the resource, then:
-
 ```sh
-kcat -b <broker> -L \
+kcat -b "{{#resources.kafka.bootstrap_brokers}}{{.}},{{/resources.kafka.bootstrap_brokers}}" -L \
   -X security.protocol=SASL_SSL -X sasl.mechanisms={{resources.kafka.auth.mechanism}} \
-  -X sasl.username={{resources.kafka.auth.username}} -X sasl.password=<password>
+  -X sasl.username={{resources.kafka.auth.username}} -X sasl.password={{resources.kafka.auth.password}}
 ```
+
+The trailing comma in the broker list is harmless. The password is rendered from the resource; do not paste this block into chat.
 
 Only your topics appear in the listing. That is the credential working, not a missing topic.
 {{/resources.kafka}}

@@ -4,19 +4,21 @@ templating: mustache
 
 # kafka
 
-{{#artifacts.kafka}}
-Topics under `{{connections.landing_zone.kafka.topic_prefix}}`, consumer groups under `{{artifacts.kafka.consumer_group_prefix}}`. SASL {{artifacts.kafka.auth.mechanism}} over TLS.
+{{#resources.kafka}}
+Topics under `{{dependencies.landing_zone.kafka.topic_prefix}}`, consumer groups under `{{resources.kafka.consumer_group_prefix}}`. SASL {{resources.kafka.auth.mechanism}} over TLS.
 
 ## Check the credential from a laptop
 
+Take one broker from the resource's `bootstrap_brokers` list and the password from the resource, then:
+
 ```sh
-kcat -b {{connections.landing_zone.kafka.bootstrap_brokers.0}} -L \
-  -X security.protocol=SASL_SSL -X sasl.mechanisms={{artifacts.kafka.auth.mechanism}} \
-  -X sasl.username={{artifacts.kafka.auth.username}} -X sasl.password=<password from the resource>
+kcat -b <broker> -L \
+  -X security.protocol=SASL_SSL -X sasl.mechanisms={{resources.kafka.auth.mechanism}} \
+  -X sasl.username={{resources.kafka.auth.username}} -X sasl.password=<password>
 ```
 
 Only your topics appear in the listing. That is the credential working, not a missing topic.
-{{/artifacts.kafka}}
+{{/resources.kafka}}
 
 ## Authorization failed
 

@@ -4,47 +4,43 @@ templating: mustache
 
 # timeoff-api
 
-{{#connections.namespace}}
-Reachable at `{{connections.namespace.ingress.scheme}}://{{connections.namespace.ingress.hostname}}{{connections.namespace.ingress.path_prefix}}{{params.path}}/`. `GET .../info` returns the running version and policy.
-{{/connections.namespace}}
+{{#resources.api}}
+Answers at `{{resources.api.url}}`. `GET {{resources.api.url}}info` returns the running version and policy.
+{{/resources.api}}
 
 ## Image
 
 Public image: `docker.io/massdrivercloud/hr-workshop-timeoff-api`, tags on Docker Hub at https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-api. The `image.tag` parameter selects the release; every tag there is deployable.
 
-## Pods never become ready
+## Deploy waits, then fails after five minutes
 
-The readiness probe hits `/healthz`, which pings the database. A pod that stays unready cannot reach MariaDB.
+The deploy waits for the application to report healthy, and health means the database answered. Open the Deployments tab and read the last deployment's log: the container's own log lines are near the end.
 
-```sh
-kubectl -n {{connections.namespace.name}} get pods -l app.kubernetes.io/instance={{slug}}
-kubectl -n {{connections.namespace.name}} logs deploy/{{slug}} --tail=50
-```
-
-{{#connections.mariadb}}
-Look for `connect to database` in the logs. Confirm the schema user can log in from inside the cluster:
-
-```sh
-kubectl -n {{connections.namespace.name}} run -it --rm mysql-check --image=mariadb:11 --restart=Never -- \
-  mariadb -h {{connections.mariadb.auth.hostname}} -P {{connections.mariadb.auth.port}} -u {{connections.mariadb.auth.username}} -p {{connections.mariadb.auth.database}} -e 'SELECT 1'
-```
-
-The user's grants stop at `{{connections.mariadb.auth.database}}`. If a migration fails with a permission error, the fix is in the landing zone, not here.
-{{/connections.mariadb}}
+- `connect to database` means the database credential did not work. Check that the `mariadb` port is connected to a `mariadb` instance that deployed successfully.
+- `DATABASE_URL is required` or `SESSION_SECRET is required` means a dependency or secret is missing. The form shows which.
+- No application log lines at all means the image could not start. Check `image.repository` and `image.tag` against the tags on Docker Hub.
 
 ## Requests are accepted but payroll never sees them
 
-Decisions are published to `{{params.events_topic}}`. Publish failures are logged, not returned to the caller, so the UI looks fine while events go missing.
+Decisions are published to `{{params.events_topic}}`. Publish failures are logged, not returned to the caller, so the page looks fine while events go missing.
 
+{{#resources.api}}
 ```sh
-kubectl -n {{connections.namespace.name}} logs deploy/{{slug}} | grep 'events:'
+curl -s {{resources.api.url}}info
 ```
+{{/resources.api}}
 
-`events disabled` at startup means the Kafka dependency did not resolve. `publish ... for request N` with a SASL error means the credentials on the `kafka` resource are wrong or its ACLs do not cover the topic. Confirm `payroll-api` is consuming the same topic; the two bundles pick it independently.
+`events_enabled: false` means the `kafka` dependency did not resolve. `events_enabled: true` with nothing arriving at payroll means the two bundles picked different topics; `events_topic` is chosen independently on each. The Deployments tab log shows `events: publish ... for request N` with the reason when a publish fails.
+
+## Requests rejected
+
+`a single request may cover at most N days` is the `max_days_per_request` parameter doing its job. Raise it and redeploy.
+
+`choose who you are acting as first` means the page sent no session token. Pick a name in the top right of the page.
 
 ## Rotate SESSION_SECRET
 
-Set a new value on the instance's secrets and redeploy. Existing acting-as tokens stop validating immediately; the UI fetches a new one when the user picks a name again. Nothing is stored in the database, so there is no migration.
+Set a new value on the instance's secrets and redeploy. Existing acting-as tokens stop validating immediately; the page fetches a new one when the user picks a name again. Nothing is stored in the database, so there is no migration.
 
 ## Roll back a release
 

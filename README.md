@@ -38,13 +38,13 @@ The platform team owns infrastructure bundles. You own your application bundles 
 
 You build the same stack the presenter just built. About fifteen minutes.
 
-### Data connections
+### Data resources
 
 1. Drag **`mariadb`** from the bundle list onto the canvas. Its one port fills from the landing zone on its own. In the form, pick the `timeoff` database. Deploy. A few seconds.
 2. Open its **Resources** tab. That is a `mariadb-authentication` resource: host, port, database, username, a connection URL, and the password shown as `[SENSITIVE]`. This credential reaches the databases in your landing zone and nothing else.
 3. Drag **`kafka`**. Deploy. Its resource lists your topics.
 
-Neither bundle creates anything. They turn what is already yours into typed connections an application can use.
+Neither bundle creates anything. They turn what is already yours into typed resources an application can depend on.
 
 ### The API
 
@@ -140,11 +140,11 @@ open http://localhost:8000/local/
 
 | Bundle | Connects to | What it does | Image |
 |--------|-------------|--------------|-------|
-| `mariadb` | landing zone | One database from your landing zone as a `mariadb-authentication` connection | |
-| `kafka` | landing zone | Your topics as a `kafka-authentication` connection | |
+| `mariadb` | landing zone | One database from your landing zone as a `mariadb-authentication` resource | |
+| `kafka` | landing zone | Your topics as a `kafka-authentication` resource | |
 | `timeoff-api` | `mariadb`, `kafka` | Requests and approvals. Publishes a decision event per approval or denial. Emits its endpoint. | [massdrivercloud/hr-workshop-timeoff-api](https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-api) |
 | `payroll-api` | `kafka` | Consumes decision events into a PTO ledger. Emits its endpoint. | [massdrivercloud/hr-workshop-payroll-api](https://hub.docker.com/r/massdrivercloud/hr-workshop-payroll-api) |
-| `timeoff-ui` | `timeoff-api`, `payroll-api` (optional) | The web page. Reads both API endpoints from its connections. Emits the site URL. | [massdrivercloud/hr-workshop-timeoff-ui](https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-ui) |
+| `timeoff-ui` | `timeoff-api`, `payroll-api` (optional) | The web page. Reads both API endpoints from its dependencies. Emits the site URL. | [massdrivercloud/hr-workshop-timeoff-ui](https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-ui) |
 
 Your applications answer at:
 

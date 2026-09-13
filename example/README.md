@@ -8,7 +8,7 @@ Three services that make up a small time-off product: employees file requests, a
 | `services/payroll-api` | Go API. Consumes decision events into an in-memory PTO ledger with pay-period adjustments. No database, no writes. | Kafka |
 | `services/timeoff-ui` | Static page served by nginx. Calls both APIs by path on the same host. | The two APIs |
 
-Each service has a bundle under `bundles/` that deploys it into a Kubernetes namespace behind a path-prefix ingress. The bundles take a `namespace` dependency and, where needed, `mariadb` and `kafka`. They never take a cloud credential.
+Each service has a bundle under `bundles/` that deploys it on the attendee's hostname. The bundles take a `landing-zone` dependency and, where needed, `mariadb-authentication` and `kafka-authentication`. They never take a cloud credential.
 
 ## Run it locally
 
@@ -92,4 +92,4 @@ mass bundle lint
 mass bundle publish --development
 ```
 
-The `namespace`, `mariadb`, and `kafka` resource types must be published to the instance before `mass bundle build` can resolve them.
+The `landing-zone`, `mariadb-authentication`, `kafka-authentication`, and `api-endpoint` resource types must be published to the organization before `mass bundle build` can resolve them.

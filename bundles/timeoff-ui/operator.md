@@ -4,35 +4,30 @@ templating: mustache
 
 # timeoff-ui
 
-{{#connections.namespace}}
-Open `{{connections.namespace.ingress.scheme}}://{{connections.namespace.ingress.hostname}}{{connections.namespace.ingress.path_prefix}}/`.
-{{/connections.namespace}}
+{{#resources.site}}
+Open `{{resources.site.url}}`.
+{{/resources.site}}
 
 ## Image
 
 Public image: `docker.io/massdrivercloud/hr-workshop-timeoff-ui`, tags on Docker Hub at https://hub.docker.com/r/massdrivercloud/hr-workshop-timeoff-ui. The `image.tag` parameter selects the release; every tag there is deployable.
 
-## Page loads but shows "timeoff-api is not reachable"
+## Page loads but says the API is not reachable
 
-The browser calls `{{connections.namespace.ingress.path_prefix}}{{params.timeoff_api_path}}` on the same host. Either no `timeoff-api` instance is deployed under that path, or its `path` param differs from `timeoff_api_path` here. Check the API directly:
+The page calls the URL on its `timeoff_api` dependency.
 
+{{#dependencies.timeoff_api}}
 ```sh
-curl -s {{connections.namespace.ingress.scheme}}://{{connections.namespace.ingress.hostname}}{{connections.namespace.ingress.path_prefix}}{{params.timeoff_api_path}}/info
+curl -s {{dependencies.timeoff_api.url}}info
 ```
+{{/dependencies.timeoff_api}}
 
-## Payroll panel says "not connected"
+No answer means the `timeoff-api` instance is still starting or its last deploy failed; check its Deployments tab. The page retries every five seconds on its own.
 
-Expected until a `payroll-api` instance is deployed at `{{params.payroll_api_path}}` under the same prefix. The page polls every five seconds and fills the panel in on its own once the API answers.
+## Payroll panel says not connected
 
-## 404 on the page itself
-
-The entrypoint copies the site under `BASE_PATH` at start. If the ingress prefix changed after the pod started, restart:
-
-```sh
-kubectl -n {{connections.namespace.name}} rollout restart deploy/{{slug}}
-kubectl -n {{connections.namespace.name}} logs deploy/{{slug}} | grep 'timeoff-ui serving'
-```
+Expected until a `payroll-api` instance is connected to the optional `payroll_api` port and the UI is redeployed. The page polls every five seconds and fills the panel in when the API answers.
 
 ## Stale page after a release
 
-The static files are served with default caching. A hard refresh clears it. `config.json` is never cached, so API paths update on a normal reload.
+Static files are served with default caching. A hard refresh clears it. The page's configuration is never cached, so API URLs update on a normal reload after a redeploy.

@@ -1,21 +1,24 @@
-# Massdriver developer workshop: your guide
+# Massdriver developer workshop
 
-This is everything you do in the 90-minute session, written so you can follow it on your own if you miss the room. Nothing here needs cloud credentials, a terminal, or infrastructure knowledge. You build applications on a platform someone else runs.
+This is everything you do in the 90-minute session, written so you can follow it on your own if you miss the room. Nothing here needs cloud credentials or infrastructure knowledge.
 
-## What you were given
+## What you have
 
 You have your own organization on Massdriver. In it:
 
-- a project called **Time Off** with an environment called **Dev**
-- one resource already set as that environment's default: your **landing zone**
+- one resource: your **landing zone**
 
-The landing zone is your slice of the shared platform. It holds a MariaDB credential that reaches only your databases, a Kafka credential that reaches only your topics, and a hostname that is yours. Everything you deploy connects to it. You did not create it and you cannot break it.
+You create the project and the environment yourself. The steps below show you how.
+
+The landing zone is your slice of the shared platform. It holds a MariaDB credential that reaches only your databases, a Kafka credential that reaches only your topics, and a hostname that is yours. Everything you deploy connects to it.
 
 ## Before the session
 
-1. Open the invitation email and sign in with GitHub. The GitHub account must use the same email the invitation went to.
-2. Pick your organization. Open the Time Off project, then the Dev environment.
-3. Click the landing zone under environment defaults. You should see your hostname, two databases, two topics, and credentials shown as `[SENSITIVE]`.
+1. Sign in with GitHub and open your organization.
+2. Open **Settings**, then **Organization Settings**. Set **Default bundle access** to **All projects**. Do this step first. The setting applies only to bundles published after you set it.
+3. Create a project called **Time Off**. Create an environment in it called **Dev**.
+4. Open **Settings**, then **Resources**. Find your **landing zone**. Add it as a default for your Dev environment.
+5. Click the landing zone. You see your hostname, two databases, two topics, and credentials shown as `[SENSITIVE]`.
 
 If any of that is missing, say so in the workshop channel before the session starts.
 
@@ -25,12 +28,12 @@ Six words carry the whole product:
 
 | Word | Meaning |
 |------|---------|
-| Bundle | A versioned package of infrastructure code plus the form that configures it. Single purpose: `mariadb`, `timeoff-api`. |
+| Bundle | A versioned package of infrastructure code plus the form that configures it. Single purpose: `mariadb`, `timeoff-api`. Generally one for each application, kept with your source code. For cloud services, one for each use case. |
 | Resource type | A typed contract for what a bundle emits, such as `mariadb-authentication`. Ports on the canvas are typed by these. |
 | Resource | A live copy of a resource type produced by a deployed bundle. Your landing zone is one. |
-| Project | A group of related work. Yours is Time Off. |
-| Environment | Dev, staging, prod, a pull request. Each has a canvas. Yours is Dev. |
-| Instance | A bundle placed and configured on a canvas. |
+| Project | A group of related work, and the unit you replicate. Yours is Time Off. |
+| Environment | A clone of a project: dev, staging, prod, a pull request. Each has a canvas. Yours is Dev. |
+| Instance | A bundle placed and configured on a canvas. This is live infrastructure or a live application. |
 
 The platform team owns infrastructure bundles. You own your application bundles and your canvases.
 
@@ -44,13 +47,15 @@ You build the same stack the presenter just built. About fifteen minutes.
 2. Open its **Resources** tab. That is a `mariadb-authentication` resource: host, port, database, username, a connection URL, and the password shown as `[SENSITIVE]`. This credential reaches the databases in your landing zone and nothing else.
 3. Drag **`kafka`**. Deploy. Its resource lists your topics.
 
-Neither bundle creates anything. They turn what is already yours into typed resources an application can depend on.
+Neither bundle creates anything. They turn what is already yours into typed resources an application can depend on. They exist to keep this workshop cheap: one shared database server and one shared Kafka cluster serve the whole room.
 
 ### The API
 
 4. Drag **`timeoff-api`**. Connect its `mariadb` port to your `mariadb` instance and its `kafka` port to your `kafka` instance. Try connecting `kafka` to the `mariadb` port: the canvas refuses, because the types do not match.
 5. In the form, pick the **events topic** from the dropdown. Those options come from your `kafka` resource. Look at **max days per request**: it has a minimum and a maximum with a readable message. Try 400.
 6. Under **Secrets**, set `SESSION_SECRET` to any random string. The deploy button is disabled until you do. Deploy. About a minute while the container starts.
+
+Ports carry first-party values: things Massdriver models and hands you over a connection. Secrets carry third-party values: anything Massdriver does not model, such as a Stripe key.
 
 ### The page
 
@@ -77,7 +82,7 @@ Neither bundle creates anything. They turn what is already yours into typed reso
 
 Watch only. The presenter describes an unrelated app to Claude Code in one sentence and the `massdriver:architect` plugin produces a bundle that fits this catalog: the dependencies are the same resource types you connected in the lab, and the app's environment variables are already wired from them. Then it is published and dropped onto a canvas like any other bundle.
 
-If you installed Claude Code and the plugin before the session, you can run the same prompt on your own machine afterward and compare. Nothing later depends on it.
+The plugin is at [massdriver-cloud/claude-plugins](https://github.com/massdriver-cloud/claude-plugins). If you installed Claude Code and the plugin before the session, you can run the same prompt on your own machine afterward and compare. You can also generate your own application on Kafka and MariaDB. Nothing later depends on it.
 
 ## Part 4: reading a bundle (0:43)
 
@@ -85,9 +90,9 @@ The presenter reads `bundles/timeoff-api/massdriver.yaml` in this repo top to bo
 
 | Block | On the canvas | In the code |
 |-------|---------------|-------------|
-| `params` | The form. Presets, ranges, readable error messages, dropdowns fed from a connected resource (`$md.enum`), fields that only appear when another is set. | Variables, generated by `mass bundle build`. Never hand-written. |
+| `params` | The form. Presets, ranges, readable error messages, dropdowns fed from a connected resource (`$md.enum`), fields that only appear when another is set. | Variables, generated by `mass bundle build`. This is basic syncing with your IaC tool. |
 | `dependencies` | The ports on the left, typed. Required ones block deploy until connected. | Typed variables shaped like the resource type: `var.mariadb.auth.hostname`. |
-| `resources` | The ports on the right. | `massdriver_resource` blocks whose JSON must match the type. |
+| `resources` | The ports on the right. These are your outputs. | `massdriver_resource` blocks whose JSON must match the type. |
 | `app.envs` | Nothing visible. | Environment variables built with JQ from params and dependencies: `DATABASE_URL` is `.dependencies.mariadb.dsn`. |
 | `app.secrets` | The Secrets section of the form. Required ones block deploy. | Injected as environment variables. |
 | `ui` | Field order, widgets, help text. | Nothing. |
@@ -98,13 +103,14 @@ Two things worth noticing. `$md.sensitive` on a resource type field is why passw
 
 Every bundle version is semver and immutable once published. An instance pins either an exact version or a channel: `~1` means any 1.x, `~1.1` means any 1.1.x patch, `latest` means the highest stable. When a matching version is published, the instance redeploys on its own.
 
-The room splits in half.
+Everyone upgrades their own bundles.
 
-- **Left half:** click your `timeoff-api` instance, **Edit Version**, **Release Channels**, pick `~1`, save. Saving deploys.
-- **Right half:** leave it pinned on 1.0.0.
-- **Everyone:** release strategy stays **stable**.
+- Click your `timeoff-api` instance, **Edit Version**, **Release Channels**, pick `~1`, save. Saving deploys.
+- Leave your release strategy on **stable**.
 
-The presenter publishes 1.0.1. The left half sees a deploy start on its own and a small change land in the page. The right half sees an available upgrade and nothing else. Then the presenter publishes a development release, `1.1.0-dev.<timestamp>`. Nobody moves, because everyone is on stable. Volunteers flip their release strategy to **development** and pick it up; a new request type appears in their form.
+You publish 1.0.1. Your instance sees a deploy start on its own, and a small change lands in the page. An instance still pinned to an exact `1.0.0` sees an available upgrade and nothing else.
+
+Then you publish a development release, `1.1.0-dev.<timestamp>`. Nothing moves, because you are on stable. Flip your release strategy to **development** and pick it up; a new request type appears in your form.
 
 The pattern to take home: production on `~1.2` (patches flow, features do not), staging on `~1` with the development strategy, personal sandboxes on `latest` with the development strategy.
 
@@ -116,7 +122,7 @@ Every bundle here is a folder with a `massdriver.yaml`, a `src/` directory, an `
 
 ```sh
 brew install massdriver
-export MASSDRIVER_API_KEY=<a key from Settings, Service Accounts in your org>
+export MASSDRIVER_API_KEY=<a key from Settings, Service Accounts, in your org>
 export MASSDRIVER_ORGANIZATION_ID=<your org id>
 cd bundles/timeoff-api
 mass bundle build

@@ -143,14 +143,53 @@ Two things worth noticing. `$md.sensitive` on a resource type field is why passw
 
 Every bundle version is semver and immutable once published. An instance pins either an exact version or a channel: `~1` means any 1.x, `~1.1` means any 1.1.x patch, `latest` means the highest stable. When a matching version is published, the instance redeploys on its own.
 
-Everyone upgrades their own bundles.
+You publish your own versions in this part. The application does not change. You change the **bundle**, and you watch Massdriver react.
+
+### Pin to a channel
 
 - Click your `timeoff-api` instance, **Edit Version**, **Release Channels**, pick `~1`, save. Saving deploys.
 - Leave your release strategy on **stable**.
 
-Publish 1.0.1 into your own organization. Your instance sees a deploy start on its own, and a small change lands in the page. An instance left pinned to an exact `1.0.0` would show an available upgrade and wait.
+### Publish a patch
 
-Then publish a development release, `1.1.0-dev.<timestamp>`. Nothing moves, because you are on stable. Flip your release strategy to **development** and pick it up; a new request type appears in your form.
+1. Open `bundles/timeoff-api/massdriver.yaml`.
+2. Find `max_days_per_request`. Change `maximum: 90` to `maximum: 120`.
+3. Change `version: 1.0.0` to `version: 1.0.1`.
+4. Publish it:
+
+   ```sh
+   mass bundle publish -b bundles/timeoff-api
+   ```
+
+5. Your instance redeploys on its own, because `~1` matches `1.0.1`. Open its form. The maximum is now 120.
+
+An instance left pinned to an exact `1.0.0` would show an available upgrade and wait for you.
+
+Now publish again without changing the version. It fails. A published version never changes.
+
+### Publish a feature
+
+6. In the same file, add a field under `properties`:
+
+   ```yaml
+   request_types:
+     title: Request types
+     type: array
+     items:
+       type: string
+       enum: [vacation, sick, bereavement]
+     default: [vacation, sick]
+   ```
+
+7. Change `version: 1.0.1` to `version: 1.1.0`.
+8. Publish it as a development release:
+
+   ```sh
+   mass bundle publish --development -b bundles/timeoff-api
+   ```
+
+9. Nothing happens. You are on the **stable** strategy, and a development release is not stable.
+10. Click the instance, **Edit Version**, set the release strategy to **development**, save. The new field appears in your form.
 
 The pattern to take home: production on `~1.2` (patches flow, features do not), staging on `~1` with the development strategy, personal sandboxes on `latest` with the development strategy.
 

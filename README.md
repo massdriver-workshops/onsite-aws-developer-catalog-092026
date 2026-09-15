@@ -4,23 +4,22 @@ This is everything you do in the 90-minute session, written so you can follow it
 
 ## What you have
 
-You have your own organization on Massdriver. In it:
+You created your own organization on Massdriver. Everything below was put in it for you:
 
-- one resource: your **landing zone**
-
-You create the project and the environment yourself. The steps below show you how.
+- a project called **Time Off** with an environment called **Dev**
+- one resource already set as that environment's default: your **landing zone**
+- the workshop bundles in your bundle list
 
 The landing zone is your slice of the shared platform. It holds a MariaDB credential that reaches only your databases, a Kafka credential that reaches only your topics, and a hostname that is yours. Everything you deploy connects to it.
 
 ## Before the session
 
-1. Sign in with GitHub and open your organization.
-2. Open **Settings**, then **Organization Settings**. Set **Default bundle access** to **All projects**. Do this step first. The setting applies only to bundles published after you set it.
-3. Create a project called **Time Off**. Create an environment in it called **Dev**.
-4. Open **Settings**, then **Resources**. Find your **landing zone**. Add it as a default for your Dev environment.
-5. Click the landing zone. You see your hostname, two databases, two topics, and credentials shown as `[SENSITIVE]`.
+1. Sign in with GitHub at the URL in your workshop invitation. Use the account you registered with.
+2. Open your organization. Open the **Time Off** project, then the **Dev** environment.
+3. Click the landing zone under environment defaults. You see your hostname, two databases, two topics, and credentials shown as `[SENSITIVE]`.
+4. Open the bundle list. You see `mariadb`, `kafka`, `timeoff-api`, `payroll-api`, and `timeoff-ui`.
 
-If any of that is missing, say so in the workshop channel before the session starts.
+If any of that is missing, say so in the workshop channel before the session starts. Do not fix it yourself.
 
 ## Part 1: the mental model (0:00)
 
@@ -131,6 +130,8 @@ mass bundle publish --development
 ```
 
 Your bundle appears in your organization's bundle list and works on the canvas like the others.
+
+Default bundle access in your organization is already set to **All projects**, so anything you publish is usable by every project you make.
 
 ### Run the example apps locally
 

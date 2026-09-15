@@ -61,10 +61,15 @@ Ports carry first-party values: things Massdriver models and hands you over a co
 7. Drag **`timeoff-ui`**. Connect its `timeoff_api` port to `timeoff-api`. Leave the optional `payroll_api` port empty; optional ports never block a deploy. Deploy.
 8. Open the **Resources** tab on `timeoff-ui` and click the site URL. Pick a name in the top right, file a time-off request, then approve it.
 
-### If you have time
+### The ledger
 
-- Drag **`payroll-api`**. Connect its `kafka` port. Pick the same events topic. Set `PAYMENTS_API_KEY` under Secrets to anything. Deploy.
-- Connect `timeoff-ui`'s optional `payroll_api` port to `payroll-api` and redeploy the UI. Reload the page: the payroll panel shows a ledger built from the events the API published. Approve another request and watch it update.
+9. Drag **`payroll-api`**. Connect its `kafka` port. Pick the same events topic. Set `PAYMENTS_API_KEY` under Secrets to anything. Deploy.
+10. Connect `timeoff-ui`'s optional `payroll_api` port to `payroll-api` and redeploy the UI. Reload the page: the payroll panel shows a ledger built from the events the API published. Approve another request and watch it update.
+
+Nothing connects these two applications to each other. `timeoff-api` writes a decision event to a topic and `payroll-api` reads it. Neither one knows the other exists.
+
+### Look around
+
 - Click any instance: **Config**, **Deployments**, **Resources**, **Alarms**. Deployments has every plan and apply, with logs.
 - Open the Resources tab on `mariadb` and download the resource. That file is what an application receives.
 
@@ -74,7 +79,7 @@ Ports carry first-party values: things Massdriver models and hands you over a co
 |--------------|-----|------------|
 | Deploy button disabled | A required port is not connected, or a required secret is not set | Connect the port or set the secret |
 | Page loads, says the API is unreachable | The API container is still starting | Wait a minute and reload |
-| Payroll panel says not connected | `payroll-api` is not deployed or not connected to the UI | Expected until the stretch goal |
+| Payroll panel says not connected | `payroll-api` is not deployed or not connected to the UI | Expected until you finish step 10 |
 | Error on `max_days_per_request` | The value is outside the allowed range | Read the message; it says the range |
 
 ## Part 3: Massdriver Architect (0:33)

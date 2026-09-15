@@ -169,18 +169,7 @@ Now publish again without changing the version. It fails. A published version ne
 
 ### Publish a feature
 
-6. In the same file, add a field under `properties`:
-
-   ```yaml
-   request_types:
-     title: Request types
-     type: array
-     items:
-       type: string
-       enum: [vacation, sick, bereavement]
-     default: [vacation, sick]
-   ```
-
+6. In the same file, find the `ui:` block at the bottom. Move `max_days_per_request` to the top of `ui:order`, above `image`.
 7. Change `version: 1.0.1` to `version: 1.1.0`.
 8. Publish it as a development release:
 
@@ -189,7 +178,7 @@ Now publish again without changing the version. It fails. A published version ne
    ```
 
 9. Nothing happens. You are on the **stable** strategy, and a development release is not stable.
-10. Click the instance, **Edit Version**, set the release strategy to **development**, save. The new field appears in your form.
+10. Click the instance, **Edit Version**, set the release strategy to **development**, save. Open the form. The fields are in the new order.
 
 The pattern to take home: production on `~1.2` (patches flow, features do not), staging on `~1` with the development strategy, personal sandboxes on `latest` with the development strategy.
 

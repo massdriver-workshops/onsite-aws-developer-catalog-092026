@@ -21,6 +21,42 @@ The landing zone is your slice of the shared platform. It holds a MariaDB creden
 
 If any of that is missing, say so in the workshop channel before the session starts. Do not fix it yourself.
 
+## Set up the CLI
+
+Do this before the session. You need it in Part 5, and you need it afterward to publish your own bundles.
+
+1. Install the CLI.
+
+   ```sh
+   brew install massdriver
+   ```
+
+2. Clone this repo.
+
+   ```sh
+   git clone git@github.com:massdriver-workshops/onsite-aws-developer-catalog-092026.git
+   cd onsite-aws-developer-catalog-092026
+   ```
+
+3. Make a key. In Massdriver, open **Settings**, then **Service Accounts**. Create one and copy the key.
+
+4. Point the CLI at your organization. Use the API URL from your workshop invitation.
+
+   ```sh
+   mass config add default \
+     --org <your org id> \
+     --api-key <your key> \
+     --url <the API URL from your invitation>
+   ```
+
+5. Check it.
+
+   ```sh
+   mass whoami
+   ```
+
+   It prints your email and your organization. If it does not, say so in the workshop channel.
+
 ## Part 1: the mental model
 
 Six words carry the whole product:
@@ -70,7 +106,7 @@ Nothing connects these two applications to each other. `timeoff-api` writes a de
 
 ### Look around
 
-- Click any instance: **Config**, **Deployments**, **Resources**, **Alarms**. Deployments has every plan and apply, with logs.
+- Click any instance: **Config**, **Deployments**, **Resources**. Deployments has every plan and apply, with logs.
 - Open the Resources tab on `mariadb` and download the resource. That file is what an application receives.
 
 ### If something does not work
@@ -112,9 +148,9 @@ Everyone upgrades their own bundles.
 - Click your `timeoff-api` instance, **Edit Version**, **Release Channels**, pick `~1`, save. Saving deploys.
 - Leave your release strategy on **stable**.
 
-You publish 1.0.1. Your instance sees a deploy start on its own, and a small change lands in the page. An instance still pinned to an exact `1.0.0` sees an available upgrade and nothing else.
+Publish 1.0.1 into your own organization. Your instance sees a deploy start on its own, and a small change lands in the page. An instance left pinned to an exact `1.0.0` would show an available upgrade and wait.
 
-Then you publish a development release, `1.1.0-dev.<timestamp>`. Nothing moves, because you are on stable. Flip your release strategy to **development** and pick it up; a new request type appears in your form.
+Then publish a development release, `1.1.0-dev.<timestamp>`. Nothing moves, because you are on stable. Flip your release strategy to **development** and pick it up; a new request type appears in your form.
 
 The pattern to take home: production on `~1.2` (patches flow, features do not), staging on `~1` with the development strategy, personal sandboxes on `latest` with the development strategy.
 
@@ -122,12 +158,9 @@ The pattern to take home: production on `~1.2` (patches flow, features do not), 
 
 ### Build your own bundle
 
-Every bundle here is a folder with a `massdriver.yaml`, a `src/` directory, an `operator.md` runbook, and an icon. Copy one, change the image and the parameters, and publish it:
+Every bundle here is a folder with a `massdriver.yaml`, a `src/` directory, an `operator.md` runbook, and an icon. Copy one, change the image and the parameters, and publish it. This uses the CLI you set up above.
 
 ```sh
-brew install massdriver
-export MASSDRIVER_API_KEY=<a key from Settings, Service Accounts, in your org>
-export MASSDRIVER_ORGANIZATION_ID=<your org id>
 cd bundles/timeoff-api
 mass bundle build
 mass bundle lint

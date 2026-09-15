@@ -21,7 +21,7 @@ The landing zone is your slice of the shared platform. It holds a MariaDB creden
 
 If any of that is missing, say so in the workshop channel before the session starts. Do not fix it yourself.
 
-## Part 1: the mental model (0:00)
+## Part 1: the mental model
 
 Six words carry the whole product:
 
@@ -36,9 +36,9 @@ Six words carry the whole product:
 
 The platform team owns infrastructure bundles. You own your application bundles and your canvases.
 
-## Part 2: the lab (0:18)
+## Part 2: the lab
 
-You build the same stack the presenter just built. About fifteen minutes.
+You build the same stack the presenter just built.
 
 ### Data resources
 
@@ -82,13 +82,13 @@ Nothing connects these two applications to each other. `timeoff-api` writes a de
 | Payroll panel says not connected | `payroll-api` is not deployed or not connected to the UI | Expected until you finish step 10 |
 | Error on `max_days_per_request` | The value is outside the allowed range | Read the message; it says the range |
 
-## Part 3: Massdriver Architect (0:33)
+## Part 3: Massdriver Architect
 
 Watch only. The presenter describes an unrelated app to Claude Code in one sentence and the `massdriver:architect` plugin produces a bundle that fits this catalog: the dependencies are the same resource types you connected in the lab, and the app's environment variables are already wired from them. Then it is published and dropped onto a canvas like any other bundle.
 
 The plugin is at [massdriver-cloud/claude-plugins](https://github.com/massdriver-cloud/claude-plugins). If you installed Claude Code and the plugin before the session, you can run the same prompt on your own machine afterward and compare. You can also generate your own application on Kafka and MariaDB. Nothing later depends on it.
 
-## Part 4: reading a bundle (0:43)
+## Part 4: reading a bundle
 
 The presenter reads `bundles/timeoff-api/massdriver.yaml` in this repo top to bottom. Open it yourself. For each block, two questions: what does it do in the code, and what does it do on the canvas.
 
@@ -103,7 +103,7 @@ The presenter reads `bundles/timeoff-api/massdriver.yaml` in this repo top to bo
 
 Two things worth noticing. `$md.sensitive` on a resource type field is why passwords render as `[SENSITIVE]` everywhere. And the word `dependencies` appears twice with two meanings: the top-level block is Massdriver's, the one inside `params` is JSON Schema's and controls conditional fields. Everyone confuses them once.
 
-## Part 5: release channels (1:05)
+## Part 5: release channels
 
 Every bundle version is semver and immutable once published. An instance pins either an exact version or a channel: `~1` means any 1.x, `~1.1` means any 1.1.x patch, `latest` means the highest stable. When a matching version is published, the instance redeploys on its own.
 

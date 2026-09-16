@@ -1,6 +1,6 @@
 # Massdriver developer workshop
 
-This is everything you do in the 90-minute session, written so you can follow it on your own if you miss the room. Nothing here needs cloud credentials or infrastructure knowledge.
+This is the whole workshop, written so you can work through it on your own, at your own speed. It takes about 90 minutes. Nothing here needs cloud credentials or infrastructure knowledge.
 
 ## What you have
 
@@ -12,18 +12,18 @@ You created your own organization on Massdriver. Everything below was put in it 
 
 The landing zone is your slice of the shared platform. It holds a MariaDB credential that reaches only your databases, a Kafka credential that reaches only your topics, and a hostname that is yours. Everything you deploy connects to it.
 
-## Before the session
+## Start here
 
-1. Sign in with GitHub at the URL in your workshop invitation. Use the account you registered with.
+1. Sign in with GitHub at the URL in your invitation. Use the account you registered with.
 2. Open your organization. Open the **Time Off** project, then the **Dev** environment.
 3. Click the landing zone under environment defaults. You see your hostname, two databases, two topics, and credentials shown as `[SENSITIVE]`.
 4. Open the bundle list. You see `mariadb`, `kafka`, `timeoff-api`, `payroll-api`, and `timeoff-ui`.
 
-If any of that is missing, say so in the workshop channel before the session starts. Do not fix it yourself.
+If any of that is missing, say so in the workshop channel. Do not try to build it yourself.
 
 ## Set up the CLI
 
-Do this before the session. You need it in Part 5, and you need it afterward to publish your own bundles.
+Do this before Part 5. You need it there, and you need it afterward to publish your own bundles.
 
 1. Install the CLI.
 
@@ -34,7 +34,7 @@ Do this before the session. You need it in Part 5, and you need it afterward to 
 2. Clone this repo.
 
    ```sh
-   git clone git@github.com:massdriver-workshops/onsite-aws-developer-catalog-092026.git
+   git clone https://github.com/massdriver-workshops/onsite-aws-developer-catalog-092026.git
    cd onsite-aws-developer-catalog-092026
    ```
 
@@ -55,7 +55,7 @@ Do this before the session. You need it in Part 5, and you need it afterward to 
    mass whoami
    ```
 
-   It prints your email and your organization. If it does not, say so in the workshop channel.
+   It prints your email and your organization.
 
 ## Part 1: the mental model
 
@@ -74,11 +74,11 @@ The platform team owns infrastructure bundles. You own your application bundles 
 
 ## Part 2: the lab
 
-You build the same stack the presenter just built.
+You build the time-off stack from the bundles already in your organization.
 
 ### Data resources
 
-1. Drag **`mariadb`** from the bundle list onto the canvas. Its one port fills from the landing zone on its own. In the form, pick the `timeoff` database. Deploy. A few seconds.
+1. Drag **`mariadb`** from the bundle list onto the canvas. Its one port fills from the landing zone on its own. In the form, pick the database that ends in `_timeoff`. Every name starts with your prefix, for example `ada_timeoff`. Deploy. A few seconds.
 2. Open its **Resources** tab. That is a `mariadb-authentication` resource: host, port, database, username, a connection URL, and the password shown as `[SENSITIVE]`. This credential reaches the databases in your landing zone and nothing else.
 3. Drag **`kafka`**. Deploy. Its resource lists your topics.
 
@@ -87,7 +87,7 @@ Neither bundle creates anything. They turn what is already yours into typed reso
 ### The API
 
 4. Drag **`timeoff-api`**. Connect its `mariadb` port to your `mariadb` instance and its `kafka` port to your `kafka` instance. Try connecting `kafka` to the `mariadb` port: the canvas refuses, because the types do not match.
-5. In the form, pick the **events topic** from the dropdown. Those options come from your `kafka` resource. Look at **max days per request**: it has a minimum and a maximum with a readable message. Try 400.
+5. In the form, open the **Events topic** dropdown. You see two topics, both with your prefix. Pick the one that ends in `.timeoff.decisions`. Those options come from your `kafka` resource. Look at **max days per request**: it has a minimum and a maximum with a readable message. Try 400.
 6. Under **Secrets**, set `SESSION_SECRET` to any random string. The deploy button is disabled until you do. Deploy. About a minute while the container starts.
 
 Ports carry first-party values: things Massdriver models and hands you over a connection. Secrets carry third-party values: anything Massdriver does not model, such as a Stripe key.
@@ -99,7 +99,7 @@ Ports carry first-party values: things Massdriver models and hands you over a co
 
 ### The ledger
 
-9. Drag **`payroll-api`**. Connect its `kafka` port. Pick the same events topic. Set `PAYMENTS_API_KEY` under Secrets to anything. Deploy.
+9. Drag **`payroll-api`**. Connect its `kafka` port. Pick the same `.timeoff.decisions` topic. Set `PAYMENTS_API_KEY` under Secrets to anything. Deploy.
 10. Connect `timeoff-ui`'s optional `payroll_api` port to `payroll-api` and redeploy the UI. Reload the page: the payroll panel shows a ledger built from the events the API published. Approve another request and watch it update.
 
 Nothing connects these two applications to each other. `timeoff-api` writes a decision event to a topic and `payroll-api` reads it. Neither one knows the other exists.
@@ -120,13 +120,13 @@ Nothing connects these two applications to each other. `timeoff-api` writes a de
 
 ## Part 3: Massdriver Architect
 
-Watch only. The presenter describes an unrelated app to Claude Code in one sentence and the `massdriver:architect` plugin produces a bundle that fits this catalog: the dependencies are the same resource types you connected in the lab, and the app's environment variables are already wired from them. Then it is published and dropped onto a canvas like any other bundle.
+Describe an unrelated app to Claude Code in one sentence. The `massdriver:architect` plugin produces a bundle that fits this catalog: the dependencies are the same resource types you connected in the lab, and the app's environment variables are already wired from them. You then publish it and drop it onto a canvas like any other bundle.
 
-The plugin is at [massdriver-cloud/claude-plugins](https://github.com/massdriver-cloud/claude-plugins). If you installed Claude Code and the plugin before the session, you can run the same prompt on your own machine afterward and compare. You can also generate your own application on Kafka and MariaDB. Nothing later depends on it.
+The plugin is at [massdriver-cloud/claude-plugins](https://github.com/massdriver-cloud/claude-plugins). You need Claude Code and the plugin installed. You can also generate your own application on Kafka and MariaDB. Nothing later depends on this part.
 
 ## Part 4: reading a bundle
 
-The presenter reads `bundles/timeoff-api/massdriver.yaml` in this repo top to bottom. Open it yourself. For each block, two questions: what does it do in the code, and what does it do on the canvas.
+Read `bundles/timeoff-api/massdriver.yaml` in this repo from top to bottom. For each block, ask two questions: what does it do in the code, and what does it do on the canvas.
 
 | Block | On the canvas | In the code |
 |-------|---------------|-------------|
